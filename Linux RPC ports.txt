@@ -1,0 +1,38 @@
+
+http://linux.vbird.org/linux_server/0330nfs.php#What_NFS_RPC
+什麼是 RPC (Remote Procedure Call)
+	因為 NFS 支援的功能相當的多，而不同的功能都會使用不同的程式來啟動， 每啟動一個功能就會啟用一些埠口來傳輸資料，
+	因此， NFS 的功能所對應的埠口才沒有固定住， 而是隨機取用一些未被使用的小於 1024 的埠口來作為傳輸之用。
+	但如此一來又造成用戶端想要連上伺服器時的困擾， 因為用戶端得要知道伺服器端的相關埠口才能夠連線吧！
+
+此時我們就得需要遠端程序呼叫 (RPC) 的服務啦！RPC 最主要的功能就是在指定每個 NFS 功能所對應的 port number ，並且回報給用戶端，讓用戶端可以連結到正確的埠口上去。
+ 那 RPC 又是如何知道每個 NFS 的埠口呢？這是因為當伺服器在啟動 NFS 時會隨機取用數個埠口，並主動的向 RPC 註冊，
+ 因此 RPC 可以知道每個埠口對應的 NFS 功能，然後 RPC 又是固定使用 port 111 來監聽用戶端的需求並回報用戶端正確的埠口， 所以當然可以讓 NFS 的啟動更為輕鬆愉快了！
+
+Tips:
+	所以你要注意，要啟動 NFS 之前，RPC 就要先啟動了，否則 NFS 會無法向 RPC 註冊。 
+	另外，RPC 若重新啟動時，原本註冊的資料會不見，
+	因此 RPC 重新啟動後，它管理的所有服務都需要重新啟動來重新向 RPC 註冊。	
+
+NFS 與 RPC 服務及檔案系統操作的相關性
+圖 13.1-2、NFS 與 RPC 服務及檔案系統操作的相關性
+
+如上圖所示，當用戶端有 NFS 檔案存取需求時，他會如何向伺服器端要求資料呢？
+
+用戶端會向伺服器端的 RPC (port 111) 發出 NFS 檔案存取功能的詢問要求；
+伺服器端找到對應的已註冊的 NFS daemon 埠口後，會回報給用戶端；
+用戶端瞭解正確的埠口後，就可以直接與 NFS daemon 來連線。
+由於 NFS 的各項功能都必須要向 RPC 來註冊，如此一來 RPC 才能瞭解 NFS 這個服務的各項功能之 port number, PID, NFS 在伺服器所監聽的 IP 等等，
+而用戶端才能夠透過 RPC 的詢問找到正確對應的埠口。 也就是說，NFS 必須要有 RPC 存在時才能成功的提供服務，因此我們稱 NFS 為 RPC server 的一種。
+事實上，有很多這樣的伺服器都是向 RPC 註冊的，舉例來說，NIS (Network Information Service) 也是 RPC server 的一種呢。
+此外，由圖 13.1-2 你也會知道，不論是用戶端還是伺服器端，要使用 NFS 時，兩者都需要啟動 RPC 才行喔！
+
+更多的 NFS 相關協定資訊你可以參考底下網頁：
+
+RFC 1094, NFS 協定解釋 http://www.faqs.org/rfcs/rfc1094.html
+Linux NFS-HOWTO：http://www.tldp.org/HOWTO/NFS-HOWTO/index.html
+
+
+
+rpcinfo -p |grep 391875
+

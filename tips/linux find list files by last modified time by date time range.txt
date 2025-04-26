@@ -1,0 +1,50 @@
+
+----------------------------------------------------
+# 查询5分钟内有修改的文件
+find . -type f -mmin -5 -print0
+find . -type f -mmin -5 -ls
+find . -type f -mmin -30 -ls
+
+
+find . -type f -mmin -60 | xargs zip /tmp/iprocess20160906.zip 
+find . -type f -mmin -120 | xargs zip /tmp/iprocess20160926.zip 
+find . -type f -mmin -130 | xargs zip /tmp/iprocess20160926-2.zip 
+find . -type f -mmin -720 | xargs zip /tmp/iprocess20160929.zip 
+
+----------------------------------------------------
+#Find files older than a specific date/time:
+find . -mtime $(echo $(date +%s) - $(date +%s -d"Jul 15, 2016 08:00:00") | bc -l | awk '{print $1 / 86400}' | bc -l)
+
+
+----------------------------------------------------
+Or you can find files between two dates. First date more recent, last date, older. 
+You can go down to the second, and you don't have to use mtime. You can use whatever you need.
+
+find . -mtime $(date +%s -d"Jul 15, 2016 08:00:00") -mtime $(date +%s -d"Jul 15, 2015 08:00:00")
+
+
+
+----------------------------------------------------
+# find files older than 2 days but not older than 8 days.
+find . -mtime +2 -a -mtime -8 -ls
+
+find . -mtime +1 -a -mtime -8 -ls
+
+#查找更新日期大于1天的
+find . -mtime +1 
+
+#删除更新日期大于1天的
+find . -mtime +1 | xargs rm
+
+
+----------------------------------------------------
+find -newerct "1 Aug 2013" ! -newerct "1 Sep 2013" -ls
+find -newerct "15 Jul 2016" ! -newerct "1 Sep 2013" -ls
+
+
+
+find . -type f -mtime +60 |grep jar |grep 2017 |xargs rm 
+
+find . -regex .*.jar -type f -mtime +60
+
+find . -regex .*.jar -type f |xargs chmod -x

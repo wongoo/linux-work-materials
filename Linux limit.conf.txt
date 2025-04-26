@@ -1,0 +1,25 @@
+--------------------------------------------------------------------------
+vi /etc/security/limits.conf 
+oracle soft nproc 2047
+oracle hard nproc 16384
+oracle soft nofile 1024
+oracle hard nofile 65536
+
+tibco soft nproc 2047
+tibco hard nproc 16384
+tibco soft nofile 1024
+tibco hard nofile 65536
+
+pro soft nproc 2047
+pro hard nproc 16384
+pro soft nofile 1024
+pro hard nofile 65536
+pro soft stack  10240
+
+--------------------------------------------------------------------------
+vi /etc/security/limits.d/90-nproc.conf 
+*          soft    nproc     1024
+root       soft    nproc     unlimited
+oracle     soft    nproc     unlimited
+pro        soft    nproc     unlimited
+tibco        soft    nproc     unlimited

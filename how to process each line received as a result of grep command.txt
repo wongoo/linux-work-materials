@@ -1,0 +1,21 @@
+how to process each line received as a result of grep command
+
+-----------------------------------------------------------------------
+One of the easy ways is not to store the output in a variable, but directly iterate over it with a while/read loop.
+
+Something like:
+
+grep xyz abc.txt | while read -r line ; do
+    echo "Processing $line"
+    # your code goes here
+done
+
+There are variations on this scheme depending on exactly what you're after.
+
+If you need to change variables inside the loop (and have that change be visible outside of it), 
+you can use process substitution as stated in fedorqui's answer:
+
+while read -r line ; do
+    echo "Processing $line"
+    # your code goes here
+done < <(grep xyz abc.txt)

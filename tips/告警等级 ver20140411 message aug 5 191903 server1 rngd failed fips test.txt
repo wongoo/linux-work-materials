@@ -1,0 +1,20 @@
+
+
+The solution is:
+----------------------------------
+The FIPS test is something done on government or more secure organizations for extra security check . 
+So everywhere else it will not be used , so when i started a new process called rngd
+on my server by default it is doing the FIPS test which was failing . 
+
+So linux had marked it down after certain attempts which is what showing below.
+	Apr 1 08:12:05 sap01 rngd: failed fips test
+	Apr 1 08:12:05 sap01 rngd: too many FIPS failures, disabling entropy source
+	Apr 1 08:12:05 sap01 ranged: No entropy sources working, exiting rngd"
+
+rngd man pages , found an option to ignore: 
+   -i, --ignorefail
+		  Ignore repeated fips failures
+
+Running as below will not generate the error:
+	/sbin/rngd -r /dev/urandom -o /dev/random -t 1 -i
+	/sbin/rngd -r /dev/urandom -o /dev/random -t 20 -i

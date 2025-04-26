@@ -1,0 +1,86 @@
+
+------------------------------------------
+1.查看SWAP
+cat /proc/swaps
+	Filename                                Type            Size    Used    Priority
+	/dev/sda3                               partition       8024    104     -1
+
+ 
+------------------------------------------
+2.通过DD创建文件
+dd if=/dev/zero of=/oc/swap bs=512 count=2000000
+	2000000+0 records in
+	2000000+0 records out
+	1024000000 bytes (1.0 GB) copied, 23.4213 seconds, 43.7 MB/s
+
+	ll
+	总计 1001012
+	drwx------ 2 root root      16384 06-03 06:56 lost+found
+	-rw-r--r-- 1 root root 1024000000 06-12 10:24 swap
+	drwxr-xr-x 4 root root       4096 06-08 16:15 tmp
+
+------------------------------------------
+3.转化为swap格式
+mkswap /oc/swap
+	Setting up swapspace version 1, size = 1023995 kB
+
+
+free
+				 total       used       free     shared    buffers     cached
+	Mem:       1035108    1018168      16940          0      14716     892500
+	-/+ buffers/cache:     110952     924156
+	Swap:         8024        104       7920
+
+------------------------------------------
+启用，加入到swap池中。
+swapon /oc/swap
+free
+				 total       used       free     shared    buffers     cached
+	Mem:       1035108    1018228      16880          0      14748     892592
+	-/+ buffers/cache:     110888     924220
+	Swap:      1008016        104    1007912
+
+ 
+cat /proc/swaps
+	Filename                                Type            Size    Used    Priority
+	/dev/sda3                               partition       8024    104     -1
+	/oc/swap                                file            999992  0       -4
+------------------------------------------
+从swap池中拿掉
+swapoff /oc/swap
+free
+				 total       used       free     shared    buffers     cached
+	Mem:       1035108    1018780      16328          0      15096     892760
+	-/+ buffers/cache:     110924     924184
+	Swap:         8024        104       7920
+	
+cat /proc/swaps
+	Filename                                Type            Size    Used    Priority
+	/dev/sda3                               partition       8024    104     -1
+
+ 
+------------------------------------------
+开机自动启动：
+echo "/oc/swap swap swap defaults 0 0" >> /etc/fstab
+cat /etc/fstab
+	LABEL=/                 /                       ext3    defaults        1 1
+	LABEL=/boot             /boot                   ext3    defaults        1 2
+	tmpfs                   /dev/shm                tmpfs   defaults        0 0
+	devpts                  /dev/pts                devpts  gid=5,mode=620  0 0
+	sysfs                   /sys                    sysfs   defaults        0 0
+	proc                    /proc                   proc    defaults        0 0
+	LABEL=SWAP-sda3         swap                    swap    defaults        0 0
+	/dev/sdb1       /oa     ext3    defaults        0 0
+	/dev/sdc1       /ob     ext3    defaults        0 0
+	/dev/sdd1       /oc     ext3    defaults        0 0
+	/dev/hdc        /media/dvd      iso9660 ro,auto 0 0
+	/oc/swap swap swap defaults 0 0
+
+ 
+------------------------------------------
+另：
+将整个设备划为swap分区
+fdisk时代码为82 linux swap，
+分区后：
+	mkswap /dev/sdc3
+	swapon /dev/sdc3

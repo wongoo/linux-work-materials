@@ -1,0 +1,18 @@
+
+How to recursively list all files and directories
+----------------------------------------------------------------------
+find . -exec ls -dl \{\} \; | awk '{print $3, $4, $9}'
+
+tree -p -u -g -f -i
+
+find . -printf "%u %g %p\n"
+
+
+
+
+
+Only list directories which contains a subdirectory
+----------------------------------------------------------------------
+find . -type d -not -empty | wc -l
+
+find . -type d -not -empty > filelist.txt

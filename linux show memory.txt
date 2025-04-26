@@ -1,0 +1,55 @@
+Hard to tell for sure, but here are two "close" things that can help.
+
+$ ps aux 
+will give you Virtual Size (VSZ)
+You can also get detailed stats from /proc file-system by going to /proc/$pid/status
+The most important is the VmSize, which should be close to what ps aux gives.
+/proc/19420$ cat status
+
+
+---------------------------------------------------------------------
+#!/bin/bash
+
+for pid in $(ps -ef | awk '{print $2}'); do
+    if [ -f /proc/$pid/smaps ]; then
+            echo "* Mem usage for PID $pid"
+            echo "-- Size:"
+            cat /proc/$pid/smaps | grep -m 1 -e ^Size: | awk '{print $2}'
+            echo "-- Rss:"
+            cat /proc/$pid/smaps | grep -m 1 -e ^Rss: | awk '{print $2}'
+            echo "-- Pss:"
+            cat /proc/$pid/smaps | grep -m 1 -e ^Pss: | awk '{print $2}'
+            echo "Shared Clean"
+            cat /proc/$pid/smaps | grep -m 1 -e '^Shared_Clean:' | awk '{print $2}'
+            echo "Shared Dirty"
+            cat /proc/$pid/smaps | grep -m 1 -e '^Shared Dirty:' | awk '{print $2}'
+    fi
+done
+
+---------------------------------------------------------------------
+@user26528's answer doesn't quite calculate the memory correctly - you need the sum of the mappings in smaps,
+ not just the top one. This script should do it:
+
+#!/bin/bash
+
+for pid in $(ps -ef | awk '{print $2}'); do
+    if [ -f /proc/$pid/smaps ]; then
+        echo "* Mem usage for PID $pid"     
+        rss=$(awk '/^Rss/ {i = i + $2} END {print i}' /proc/$pid/smaps)
+        pss=$(awk '/^Pss/ {i = i + $2 + 0.5} END {print i}' /proc/$pid/smaps)
+        sc=$(awk '/^Shared_Clean/ {i = i + $2} END {print i}' /proc/$pid/smaps)            
+        sd=$(awk '/^Shared_Dirty/ {i = i + $2} END {print i}' /proc/$pid/smaps)
+        pc=$(awk '/^Private_Clean/ {i = i + $2} END {print i}' /proc/$pid/smaps)
+        pd=$(awk '/^Private_Dirty/ {i = i + $2} END {print i}' /proc/$pid/smaps)
+        echo "-- Rss: $rss kB" 
+        echo "-- Pss: $pss kB"
+        echo "Shared Clean $sc kB"
+        echo "Shared Dirty $sd kB"
+        echo "Private $(($pd + $pc)) kB"
+    fi
+done
+
+---------------------------------------------------------------------
+计算内存占有率:
+	free -m | awk 'NR==2{printf "Memory Usage: %s/%sMB (%.2f%)\n", $3,$2,$3*100/$2 }'
+	free -m | awk 'NR==3{printf "Memory Usage: %s/%sMB (%.2f%)\n", $3,$3+$4,$3*100/($3+$4) }'

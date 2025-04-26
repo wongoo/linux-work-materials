@@ -1,0 +1,12 @@
+ 
+var=4.57
+法一：
+echo ${var%.*} #这个是直接去除小数点及后面所有内容，只用于bash
+法二：
+echo $var | awk -F. '{print $1}' #以小数点为分隔符取第一个字段
+法三：
+echo $var | awk '{print int($0)}' #awk中可直接使用C函数取整
+法四：
+echo "scale=0;$var/1"|bc -l #用bc计算
+法五：
+printf "%.0f\n" $var #这个与上面不同，是四舍五入的

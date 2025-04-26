@@ -1,0 +1,23 @@
+1、进入存放源配置的文件夹
+cd /etc/yum.repos.d
+ 
+2、备份默认源
+mv ./CentOS-Base.repo ./CentOS-Base.repo.bak
+
+3、使用wget下载163的源	http://mirrors.163.com/.help/centos.html
+wget http://mirrors.163.com/.help/CentOS6-Base-163.repo
+wget http://123.58.173.186/.help/CentOS6-Base-163.repo
+
+wget http://mirrors.163.com/.help/CentOS7-Base-163.repo
+
+
+4、把下载下来的文件CentOS-Base-163.repo设置为默认源
+mv CentOS6-Base-163.repo CentOS-Base.repo
+mv CentOS7-Base-163.repo CentOS-Base.repo
+
+通过上述操作就把默认源修改为163的了。当然上述的第三、四步可以合并为如下：
+wget http://mirrors.163.com/.help/CentOS6-Base-163.repo -O CentOS-Base.repo
+wget http://mirrors.163.com/.help/CentOS6-Base-163.repo -O rhel-source.repo
+
+运行yum makecache生成缓存
+yum makecache

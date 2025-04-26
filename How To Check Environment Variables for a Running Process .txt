@@ -1,0 +1,14 @@
+How To Check Environment Variables for a Running Process ?
+--------------------------------------------------------------------
+
+In Linux,
+ strings –a /proc/<pid_of_the_process>/environ
+
+
+In Solaris,
+ pargs -e <pid_of_the_process>
+
+
+In AIX,
+ pargs or ps eww <pid_of_the_process>
+

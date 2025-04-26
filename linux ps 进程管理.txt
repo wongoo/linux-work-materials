@@ -1,0 +1,111 @@
+Task:see proecess whoes command path includes "oracle"
+ps -ef | grep oracle
+
+Task: Lookup process
+Use pgrep command. pgrep looks through the currently running processes and lists the process IDs which matches the selection criteria to screen.
+For example display firefox process id:
+$ pgrep firefox
+
+Following command will list the process called sshd which is owned by root user.
+$ pgrep -u root sshd
+
+=========================================================
+'lsof -w -n -i tcp:8080'
+or 'fuser -n tcp 8080'
+or 'netstat -anp|grep :8080[[:blank:]]'
+should show you the process ID.
+If there is no (init)script to use to shut down the offending service (since TCP/8080 means proxy) to kill you can by PID 'kill -9 pidnumber'.
+
+----------------------------
+pgrep tomcat | xargs ps
+----------------------------
+This will show any process that has "tomcat" in its process name.
+
+=============================================================
+Task: see every process on the system
+# ps -A
+# ps -e
+
+Task: See every process except those running as root
+# ps -U root -u root -N
+
+Task: See process run by user vivek
+# ps -u vivek
+Task: top command
+
+The top program provides a dynamic real-time view of a running system. Type the top at command prompt:
+# top
+
+
+Task: Print a process tree using ps
+# ps -ejH
+# ps axjf
+
+Task: Get info about threads
+# ps -eLf
+# ps axms
+
+Task: Get security info
+# ps -eo euser,ruser,suser,fuser,f,comm,label
+# ps axZ
+# ps -eM
+
+Task: Save Process Snapshot to a file
+# top -b -n1 > /tmp/process.log
+Or you can email result to yourself:
+# top -b -n1 | mail -s 'Process snapshot' you@example.com
+
+
+
+
+=============================================================
+From time to time you may wish to view processes that are running on Linux.
+To obtain a list of these processes, type ``ps -aux'', which will look similar to the following:
+
+USER       PID %CPU %MEM  SIZE   RSS TTY STAT START   TIME COMMAND
+bin         69  0.0  1.0   788   320  ?  S   Nov 30   0:00 /usr/sbin/rpc.portmap
+frampton 10273  0.0  2.1  1136   664  p0 S    14:12   0:00 -bash
+frampton 10744  0.0  1.1   820   360  p0 R    17:25   0:00 ps -aux
+frampton 10745  0.0  0.8   788   264  p0 S    17:25   0:00 more
+nobody   10132  0.0  1.8  1016   588  ?  S    13:36   0:00 httpd
+nobody   10133  0.0  1.8   988   568  ?  S    13:36   0:00 httpd
+nobody   10413  0.0  1.8  1012   580  ?  S    14:56   0:00 httpd
+nobody   10416  0.0  1.8  1012   580  ?  S    14:56   0:00 httpd
+nobody   10418  0.0  1.8  1012   588  ?  S    14:57   0:00 httpd
+nobody   10488  0.0  1.7   976   556  ?  S    15:34   0:00 httpd
+nobody   10564  0.0  1.8   988   564  ?  S    16:06   0:00 httpd
+nobody   10600  0.0  1.8   988   564  ?  S    16:15   0:00 httpd
+nobody   10670  0.0  1.8   988   568  ?  S    16:45   0:00 httpd
+nobody   10704  0.0  1.7   976   552  ?  S    17:03   0:00 httpd
+root         1  0.0  1.0   776   312  ?  S   Nov 30   1:13 init [3]
+root         2  0.0  0.0     0     0  ?  SW  Nov 30   0:00 (kflushd)
+root         3  0.0  0.0     0     0  ?  SW  Nov 30   0:00 (kswapd)
+
+The list shows you the owner of the process ("nobody" for special services such as web servers),
+the process identification number, the % of CPU time the process is currently using, the % of memory the process is consuming,
+and other related information, as well as a description of the task itself.
+
+To get more information on a given process, type ``ps pid'' (where "pid" is the process identification number).
+Looking at our example above, "ps 10704" would display:
+
+10704  ?  S     0:00 /usr/local/etc/httpd/httpd
+
+This would tell you that this particular process is a web server (the Apache web server appears multiple times in the process list;
+for information on why see Section 7.1).
+
+If you happen to notice a service is not operating, you can use the "kill -HUP pid"
+(where "pid" is the process identification number as shown in the process list produced with "ps").
+For example, if Internet services (a process called inetd, process #123 in our example) are not working as they should,
+a ``kill -HUP 123'' (or even safer, use the ``killall'' command and specify the process name: ``killall -HUP inetd'') should restart the process.
+The -HUP option to the kill command means "hang up"; the process knows that it is supposed to reload itself.
+
+Another thing to try if you are unable to resolve the problem would be to shut the system down and reboot it (see Section 6.7 for details).
+
+At times, you may find it necessary to temporarily suspend a process, and then resume its execution at a later time. For example,
+you may be running a CPU-intensive job and wish to burn an IDE-based CDRecordable.
+Since IDE-based devices rely on the CPU for much of the work behind input/output,
+they are prone to buffer starvation if your CPU is too busy, and you end up with a useless coaster instead of a properly prepared CD!
+The following two commands will suspend a process, and the resume it, respectively:
+
+kill -STOP 945
+kill -CONT 945

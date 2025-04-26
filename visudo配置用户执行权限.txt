@@ -1,0 +1,41 @@
+
+root执行 visudo
+
+Cmnd_Alias [ALIAS_GROUP_NAME] = [command][, command][, command][, command]...
+
+visudo后得到的格式为
+账户名                 主机名称=(可切换的身份)              可用的指令
+user                   ALL=(otheruser)                       Aliasgroup
+
+比如root账户
+root                   ALL=(ALL)                                  ALL
+
+对于新增的账户就在下面加上
+test   ALL=(root)  ALL
+允许test用sudo命令执行root的所有命令
+
+同理对于组使用者也是一个,但是要加上%
+%testgroup   ALL=(root)  ALL
+
+需要注意的是 每次切换 你都需要密码才可以,使用如下命令可以避免输入密码
+test   ALL=(root) NOPASSWD: ALL
+
+============================================================================
+User_Alias TIBCOUSER = tibco
+Cmnd_Alias TIBCO = /tibco/tra/domain/psbccfc/hawkagent_psbccfc, /tibco/administrator/domain/psbccfc/bin/tibcoadmin_psbccfc
+root  ALL=(tibco) NOPASSWD: TIBCO
+TIBCOUSER  ALL = NOPASSWD: TIBCO
+
+============================================================================
+su命令无需输入密码（存在安全漏洞），将用户加入到whell群组中:
+vi /etc/pam.d/su
+# Uncomment this if you want wheel members to be able to su without a password.
+ auth       sufficient pam_wheel.so trust use_uid
+
+#============================================================================
+User_Alias TIBCOUSER = tibco
+Cmnd_Alias OPENOFFICE = /opt/openoffice4/program/soffice
+TIBCOUSER  ALL =(root) NOPASSWD: OPENOFFICE
+
+
+

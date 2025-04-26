@@ -1,0 +1,100 @@
+Linux shell 实现HTTP服务
+----------------------------------------------
+
+
+-------------------------
+## 需求场景
+-------------------------
+
+使用代理服务器 HAProxy 对 Mysql 做负载均衡是常用方案，为提高可用性，当某个 Mysql 出现问题时，例如服务器故障了，或者数据复制中断了，最好可以让 HAProxy 马上知道，然后停止向其转发请求
+
+HAProxy 如何知道 Mysql 是否有问题呢？
+
+-------------------------
+## 解决思路
+-------------------------
+
+（1）编写一个shell脚本，检查 mysql 的状态，然后输出结果，例如状态正常时，返回状态码200及正确信息，否则返回状态码503及错误信息
+
+（2）实现一个HTTP服务，有请求连接后，调用上面的检查脚本，返回检查结果
+
+（3）HAProxy 访问这个HTTP服务，根据返回的结果信息来判断这个 mysql 是否可用
+
+
+如何方便快速的实现一个可以调用shell脚本的HTTP服务呢？
+
+-------------------------
+## 比较通用的方案就是 xinetd
+-------------------------
+
+xinetd 是 Linux 的守护进程，全称为 extended interent daemon，扩展的网络守护进程
+
+xinetd 可以打开一个端口，等待连接，你可以告诉 xinetd 运行哪个脚本，当有连接进来后，xinetd 便会执行脚本，然后直接返回脚本输出的内容
+
+HAProxy -> xinetd -> mysql-check脚本，HAProxy 便取得了mysql的状态信息
+
+xinetd 的配置案例
+
+
+下面实现一个简单的 xinetd 示例，开放 9200 端口，返回一个测试脚本的输出内容
+
+如果机器上还没有 xinetd，先安装一下，centos7 下可以使用命令 yum install xinetd
+
+（1）测试脚本
+
+#!/bin/bash
+echo `uptime | egrep -o 'up ([0-9]+) days' | awk '{print $2}'`
+
+这个脚本用来输出当前服务器的在线天数
+
+用 chmod +x 给脚本添加可执行权限
+
+（2）编写 xinetd 服务
+
+例如服务名为 helloworld，文件名 /etc/xinetd.d/helloworld，内容为
+
+service helloworld
+{
+disable = no
+port    = 9200
+socket_type     = stream
+protocol        = tcp
+wait            = no
+user            = root
+server          = /root/test.sh
+server_args     = test
+}
+
+port 指定监听的端口
+server 指定要执行的脚本
+
+（3）加入服务列表
+
+修改 /etc/services
+
+找到定义 9200 端口的位置，注释掉原有的，添加 helloworld 服务
+
+helloworld      9200/tcp
+#wap-wsp         9200/tcp
+#wap-wsp         9200/udp
+
+（4）重启 xinetd
+
+centos 下的重启命令为：
+
+systemctl restart xinetd.service
+
+（5）测试
+
+分别用 nc 和 telnet 两个命令测试一下
+
+nc localhost 9200
+telnet localhost 9200
+
+
+
+可以正确输出脚本执行内容，完成示例
+
+-------------------------
+github 分享了自己是如何使用 HAProxy 感知 Mysql 的，有兴趣的朋友可以仔细看一下，文章地址
+http://githubengineering.com/context-aware-mysql-pools-via-haproxy/?utm_source=dbweekly&utm_medium=email

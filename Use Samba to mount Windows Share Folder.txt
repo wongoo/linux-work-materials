@@ -1,0 +1,41 @@
+1. Start Samba Service:
+suse-eric1:/etc/init.d # ./smb start
+Starting Samba SMB daemon                                                                                         done
+
+2. view service status:
+suse-eric1:/etc/init.d # netstat -tlnp |grep smb
+tcp        0      0 0.0.0.0:139             0.0.0.0:*               LISTEN      3700/smbd           
+tcp        0      0 0.0.0.0:445             0.0.0.0:*               LISTEN      3700/smbd  
+
+3. exec "smbclient" command to view windows share folder :
+suse-eric1:/etc/init.d # smbclient -L //192.168.5.111 -U user
+Enter user's password:
+Domain=[JAVA-2-3] OS=[Windows Server 2003 3790 Service Pack 2] Server=[Windows Server 2003 5.2]
+
+    Sharename       Type      Comment
+    ---------       ----      -------
+    print$          Disk      打印机驱动程序
+    C$              Disk      默认共享
+    VM_LINUX_ShareFolder Disk      
+
+session request to 192.168.5.111 failed (Called name not present)
+session request to 192 failed (Called name not present)
+Domain=[JAVA-2-3] OS=[Windows Server 2003 3790 Service Pack 2] Server=[Windows Server 2003 5.2]
+
+    Server               Comment
+    ---------            -------
+
+    Workgroup            Master
+    ---------            -------
+
+4. mount the share folder:
+suse-eric1:/etc/init.d # mount -t cifs -o username=user,password=password, -l //192.168.5.111/VM_LINUX_ShareFOlder /mnt/share
+suse-eric1:/etc/init.d # cd /mnt/share
+suse-eric1:/mnt/share # ls
+suse-eric1:/mnt/share # ls
+share.txt
+suse-eric1:/mnt/share #
+
+
+注意：记得在windows中为指定用户设定共享文件夹权限。
+参考：http://www.linuxsir.org/main/?q=node/158

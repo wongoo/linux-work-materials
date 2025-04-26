@@ -1,0 +1,68 @@
+
+
+===========================================================================
+## Server Config
+===========================================================================
+
+yum install ntp
+
+chkconfig ntpd on
+service ntpd restart
+chkconfig ntpd --list
+
+ln -sf  /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+===========================================================================
+## Client Config
+===========================================================================
+
+------------------------------------------
+vi /etc/ntp.conf
+
+#prefer: If this option is specified that server is preferred over other servers. 
+server 192.168.1.12 prefer
+
+------------------------------------------
+ln -sf  /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+chkconfig ntpd on
+service ntpd restart
+chkconfig ntpd --list
+ntpq -p
+ntpdate -u 192.168.1.12
+ntpdc -c sysinfo
+date
+
+
+===========================================================================
+## 时区
+===========================================================================
+
+1. 查看当前时区
+    date -R
+			
+2. 修改设置时区
+    方法(1)
+        tzselect
+			选择以后直接TZ='Asia/Shanghai'; export TZ生效
+			如果不用tzselect命令，可以修改文件变更时区。
+			# vi /etc/sysconfig/clock
+			ZONE=Asia/Shanghai（查/usr/share/zoneinfo下面的文件）
+			UTC=false
+			ARC=false
+			# rm /etc/localtime
+			# ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+			重新启动即可。
+       方法(2) 仅限于RedHat Linux 和 CentOS
+            timeconfig
+       方法(3) 适用于Debian
+            dpkg-reconfigure tzdata
+			
+3. 复制相应的时区文件，替换系统时区文件；或者创建链接文件
+	cp /usr/share/zoneinfo/$主时区/$次时区 /etc/localtime
+	在中国可以使用：
+	cd/etc
+	rm localtime
+	cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+
+	TZ='Asia/Shanghai'; export TZ

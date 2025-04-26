@@ -1,0 +1,7 @@
+vi /etc/fstab
+
+#device        mountpoint             fstype    options  dump   fsck
+
+/dev/sdb1    /home/yourname/mydata    ext3    defaults    0    1
+
+/dev/sdb1    /extensiondisk1    ext3    defaults    0    1

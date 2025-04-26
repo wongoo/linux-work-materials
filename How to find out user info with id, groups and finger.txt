@@ -1,0 +1,54 @@
+How to find out user info with id, groups and finger:
+
+------------------------------------------------------------------------------------------------
+The id command displays the user¡¯s UID and all the user¡¯s groups and GIDs.
+Syntax: id username
+------------------------------------------------------------------------------------------------
+$ id razvan
+uid=1000(razvan)
+gid=1000(razvan) groups=1000(razvan),4(adm),
+20(dialout),24(cdrom),46(plugdev),
+116(lpadmin),118(admin),125(sambashare)
+
+------------------------------------------------------------------------------------------------
+The groups command also displays all the user¡¯s groups:
+Syntax: groups username
+
+------------------------------------------------------------------------------------------------
+$ groups razvan
+razvan : razvan adm dialout cdrom plugdev lpadmin admin sambashare
+
+------------------------------------------------------------------------------------------------
+If you need to find other info, such as the login shell, full name, email address or homedir, use finger.
+Syntax: finger username
+
+You need to install finger first:
+
+On Debian/Ubuntu/Linux Mint: sudo apt-get install finger
+On Fedora/CentOS: sudo yum install finger
+On openSUSE: sudo zypper install finger
+------------------------------------------------------------------------------------------------
+$ finger razvan
+Login: razvan Name: razvan
+Directory: /home/razvan Shell: /bin/bash
+[...]
+No mail.
+No Plan.
+
+------------------------------------------------------------------------------------------------
+Or, you can grep the username in /etc/passwd and /etc/group:
+
+$ < /etc/passwd grep razvan
+
+razvan:x:1000:1000:razvan,,,elp:/home/razvan:/bin/bash
+
+------------------------------------------------------------------------------------------------
+$ < /etc/group grep razvan
+
+adm:x:4:razvan
+
+dialout:x:20:razvan
+
+[...]
+
+razvan:x:1000:

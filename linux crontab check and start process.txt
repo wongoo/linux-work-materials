@@ -1,0 +1,131 @@
+
+
+
+/var/spool/cron
+
+0 * * * * cd /usr/share/nginx/html/cs; git pull -v
+
+service crond start
+chkconfig crond --list
+-----------------------------------------------------------------------------------------------------------
+--SUNBAR PROD API GATEWAY
+
+* * * * * [ "$(ps -ef |grep -v grep |grep sop-api-gateway |wc -l)" -eq 0 ] && cd /opt/sop/sop-api-gateway;./restart.sh
+* * * * * [ "$(ps -ef |grep -v grep |grep sop-config-server |wc -l)" -eq 0 ] && cd /opt/sop/sop-config-server;./restart.sh
+* * * * * [ "$(ps -ef |grep -v grep |grep sop-uac-service |wc -l)" -eq 0 ] && cd /opt/sop/sop-uac;./restart.sh
+* * * * * [ "$(ps -ef |grep -v grep |grep sop-sms-service-worker |wc -l)" -eq 0 ] && cd /opt/sop/sop-sms-service-worker;./restart.sh
+* * * * * [ "$(ps -ef |grep -v grep |grep sop-sms-service-api |wc -l)" -eq 0 ] && cd /opt/sop/sop-sms-service-api;./restart.sh
+* * * * * [ "$(ps -ef |grep -v grep |grep sop-media-service |wc -l)" -eq 0 ] && cd /opt/sop/sop-media-service;./restart.sh
+* * * * * [ "$(ps -ef |grep -v grep |grep sop-merchant-service |wc -l)" -eq 0 ] && cd /opt/sop/sop-merchant-service;./restart.sh
+
+* * * * * [ "$(ps -ef |grep -v grep |grep sop-merchant-service |wc -l)" -eq 0 ] && cd /opt/sop/sop-merchant-service;./restart.sh
+* * * * * [ "$(ps -ef |grep -v grep |grep sop-merchant-service |wc -l)" -eq 0 ] && cd /opt/sop/sop-merchant-service;./restart.sh
+
+
+* * * * * [ "$(ps -ef |grep -v grep |grep nginx |wc -l)" -eq 0 ] && /usr/local/nginx/sbin/nginx
+
+-----------------------------------------------------------------------------------------------------------
+
+* * * * * [ "$(ps -ef |grep -v grep |grep cas |wc -l)" -eq 0 ] && /opt/cas/tomcat_cas/bin/startup.sh
+* * * * * [ "$(ps -ef |grep -v grep |grep mongod |wc -l)" -eq 0 ] && /opt/mongodb/bin/start_mongo.sh
+
+
+
+* * * * * [ "$(ps -ef |grep -v grep |grep log-service |wc -l)" -eq 0 ] && /opt/sop/start_log_service.sh
+
+* * * * * [ "$(ps -ef |grep -v grep |grep media-service |wc -l)" -eq 0 ] && /home/soundbus/sop/start_app.sh /home/soundbus/sop/sop-media-service
+
+* * * * * [ `ps -ef|grep -v grep|grep <command>` -eq 0 ] && <command>
+
+* * * * * [ "$(ps -ef|grep [c]ommand|wc -l)" -eq 0 ] && <command>
+
+
+* * * * * [ "$(ps -ef |grep -v grep |grep /fv/ |wc -l)" -eq 0 ] && service tibcoformvine start
+*/30 * * * * [ "$(ps -ef |grep -v grep |grep /home/nexus/nexus |wc -l)" -eq 0 ] && /home/nexus/nexus-2.12.0-01/bin/nexus start
+* * * * * [ "$(ps -ef |grep -v grep |grep tibemsd |wc -l)" -eq 0 ] && /opt/tib/ems/8.2/bin/tibemsd64.sh
+
+
+* * * * * [ "$(ps -ef |grep -v grep |grep MIDPT |wc -l)" -eq 0 ] && /home/cobol/pingtai/bin/start.sh
+
+* * * * * [ "$(ps -ef |grep -v grep |grep icomet |wc -l)" -eq 0 ] && cd /opt/icomet;./restart.sh
+* * * * * [ "$(ps -ef |grep -v grep |grep centrifugo |wc -l)" -eq 0 ] && cd /opt/centrifugo;./start.sh
+
+* * * * * [ "$(ps -ef |grep -v grep |grep im-platform-service |wc -l)" -eq 0 ] && cd /opt/im/im-platform-service;./restart.sh
+* * * * * [ "$(ps -ef |grep -v grep |grep centrifugo |wc -l)" -eq 0 ] && cd /opt/centrifugo;./start.sh
+* * * * * [ "$(ps -ef |grep -v grep |grep centrifugo |wc -l)" -eq 0 ] && cd /home/developer/centrifugo;./start.sh
+
+-----------------------------------------------------------------------------------------------------------
+iprocess:
+* * * * * /tibco/bpm/script/tibco-ipe-prod.sh check
+* * * * * /tibco/bpm/script/tibco-ipe-prod.sh status
+
+-----------------------------------------------------------------------------------------------------------
+jboss:
+
+* * * * * [ "$(ps -ef |grep -v grep |grep /home/jboss/tomcat8/product |wc -l)" -eq 0 ] && /home/jboss/tomcat.sh product start > /home/jboss/logs/crontab-product.log
+* * * * * [ "$(ps -ef |grep -v grep |grep /home/jboss/tomcat8/commission |wc -l)" -eq 0 ] && /home/jboss/tomcat.sh commission start > /home/jboss/logs/crontab-commission.log
+* * * * * [ "$(ps -ef |grep -v grep |grep /home/jboss/jboss-eap-6.3/standalone |wc -l)" -eq 0 ] && /etc/init.d/jboss start > /home/jboss/logs/crontab-jboss.log
+
+-----------------------------------------------------------------------------------------------------------
+tibco:
+* * * * * /etc/init.d/tibcoems check > /tibco/logs/crontab-ems.log
+*/5 * * * * /etc/init.d/be check > /tibco/logs/crontab-be.log
+*/5 * * * * /etc/init.d/tibcohawk check > /tibco/logs/crontab-tibcohawk.log
+*/5 * * * * /etc/init.d/tibcoadmin check > /tibco/logs/crontab-tibcoadmin.log
+
+* * * * * [ "$(ps -ef |grep -v grep |grep hawkagent_psbccfc |wc -l)" -eq 0 ] && cd /opt/tib/tra/domain/psbccfc/;./hawkagent_psbccfc > /dev/null 2>&1 &
+* * * * * [ "$(ps -ef |grep -v grep |grep tibcoadmin_psbccfc |wc -l)" -eq 0 ] && cd /opt/tib/administrator/domain/psbccfc/bin/;./tibcoadmin_psbccfc > /dev/null 2>&1 &
+
+*/10 * * * * [ "$(ps -ef |grep -v grep |grep ruleEng |wc -l)" -eq 0 ] && cd /opt/psbc_rules/script/;./start.sh ru
+*/10 * * * * [ "$(ps -ef |grep -v grep |grep CreditAmtManager |wc -l)" -eq 0 ] && cd /opt/psbc_rules/script/;./start.sh cam 1
+
+* * * * * [ "$(ps -ef |grep -v grep |grep swnod1 |wc -l)" -eq 0 ] && cd /opt/bpm/swnod1/bin;./swstart -p
+
+* * * * * [ "$(ps -ef |grep -v grep |grep mysqld |wc -l)" -eq 0 ] && /usr/local/mysql/bin/mysqld —user=root &
+* * * * * [ "$(ps -ef |grep -v grep |grep ignite |wc -l)" -eq 0 ] && /app/ignite/bin/startignite.sh
+* * * * * [ "$(ps -ef |grep -v grep |grep mongod |wc -l)" -eq 0 ] && /app/mongodb/bin/startmongodb.sh
+
+-----------------------------------------------------------------------------------------------------------
+	every minute:
+
+	* * * * * /path/to/php /var/www/html/a.php
+
+	every 24hours (every midnight):
+
+	0 0 * * * /path/to/php /var/www/html/reset.php
+
+	See this reference for how crontab works: http://adminschoice.com/crontab-quick-reference, 
+	and this handy tool to build cron jobx: http://www.htmlbasix.com/crontab.shtml
+-----------------------------------------------------------------------------------------------------------
+
+This is the format of /etc/crontab:
+
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name  command to be executed
+
+
+-----------------------------------------------------------------------------------------------------------
+BOCCFC
+
+
+* * * * * [ "$(ps -ef |grep -v grep |grep /opt/IBM/WebSphere/AppServer |wc -l)" -eq 0 ] && cd /opt/IBM;./startwas.sh
+* * * * * [ "$(ps -ef |grep -v grep |grep /app/IBM/WebSphere/AppServer |wc -l)" -eq 0 ] && cd /app/IBM;./startwas.sh
+
+* * * * * [ "$(ps -ef |grep -v grep |grep $SWDRI/etc/procmgr |wc -l)" -eq 0 ] && cd $SWDIR/bin;./swstart -p
+
+
+
+*/5 * * * * cd /opt/sonic;./start_10.sh
+
+*/5 * * * * /home/developer/script/check_merchant_mem.sh
+
+0 0 * * * netstat -antop |grep 22222|grep LISTEN | awk '{print $7}' |awk -F '/' '{print $1}' |xargs kill -9
+
+0 0 * * * sh /home/ec2-user/script/backup.sh
+
+30 9 * * * /home/tomcat/food/foodorder "https://oapi.dingtalk.com/robot/send?access_token=e01a2f62a52d9b7b013743b0af8976bbc25e7e2ee7da5c0fb18ccb9e2d7ca87e"

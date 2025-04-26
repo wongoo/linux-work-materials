@@ -1,0 +1,29 @@
+
+find -name macros.vm |xargs sed -i "s#http://54.222.159.152:9080##g"
+
+find -name logback.xml |xargs sed -i "s#<appender-ref ref="STDOUT" />##g"
+
+
+FOR MAC:
+————
+find -name macros.vm |xargs sed -i “.bak” "s#http://54.222.159.152:9080##g"
+
+
+If you use the -i option you need to provide an extension for your backups.
+
+If you have:
+  File1.txt
+  File2.cfg
+
+The command:
+  sed -i '.original' 's/old_link/new_link/g' *
+
+create 2 backup files like:
+  File1.txt.original
+  File2.cfg.original
+
+There is no portable way to avoid making backup files because is impossible to find a mix of sed commands that works on all cases:
+
+sed -i -e ... - does not work on OS X as it creates -e backups
+sed -i'' -e ... - does not work on OS X 10.6 but works on 10.9+
+sed -i '' -e ... - not working on GNU

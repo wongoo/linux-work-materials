@@ -1,0 +1,14 @@
+
+1. 下载wkhtmltopdf
+	下载最新版本： http://wkhtmltopdf.org/downloads.html
+	
+	wget http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz
+	xz -d wkhtmltox-0.12.3_linux-generic-amd64.tar.xz
+	tar -xvf wkhtmltox-0.12.3_linux-generic-amd64.tar
+	
+	wget https://github.com/wkhtmltopdf/wkhtmltopdf/archive/wkhtmltopdf-master.zip
+	unzip wkhtmltopdf-master.zip
+	cd wkhtmltopdf-master
+	scripts/build.py linux-generic-amd64
+	
+2. 

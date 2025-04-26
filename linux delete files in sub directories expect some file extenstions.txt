@@ -1,0 +1,1 @@
+find -type f ! -iname "*.txt" ! -iname "*.xls" ! -iname "*.xlsx"   ! -iname "*.doc"   ! -iname "*.docx"  ! -iname "*.ppt"  ! -iname "*.pptx" ! -iname "*.vsd"  ! -iname "*.vsdx" -delete

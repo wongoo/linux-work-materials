@@ -1,0 +1,94 @@
+
+linux下如何设置vip（虚拟ip） 
+=================================================================================
+在eth0处引用别名，设置完子网掩码即可
+ifconfig eth0:0 166.111.69.100 netmask 255.255.255.0 up
+ifconfig em1:0 192.170.0.50 netmask 255.255.255.0 up
+ifconfig查看此时的信息
+
+eth0 Link encap:Ethernet HWaddr 08:00:27:64:59:11 
+          inet addr:166.111.69.17 Bcast:166.111.69.255 Mask:255.255.255.0
+          inet6 addr: 2402:f000:1:4412:a00:27ff:fe64:5911/64 Scope:Global
+          inet6 addr: fe80::a00:27ff:fe64:5911/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+          RX packets:597673 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:215472 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:67285933 (67.2 MB) TX bytes:22782158 (22.7 MB)
+
+eth0:0 Link encap:Ethernet HWaddr 08:00:27:64:59:11 
+          inet addr:166.111.69.100 Bcast:166.111.69.255 Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+
+然后找另一台机器ping这个vip(eth0:0)就可以看到显示结果了。
+写在/etc/rc.local里也可以，写在这里就不怕断电后机器无法正常使用了。
+=================================================================================
+
+使用ifconfig命令添加一个VIP后，如果需要将这个VIP删除，可以使用ifconfig VIP down命令。
+但是，如果操作顺序不当，VIP会仍然留在系统缓存中，这时，使用ifconfig是看不到这个VIP的，但是，使用IP命令能够看到。
+查看ip
+ip -o -f inet addr show
+
+删除ip 
+ip -f inet addr delete 10.0.64.102/32  dev tunl0
+ 
+ip 与ifconfig 具体比较如下：
+ifconfig tunl0 10.0.64.102 netmask 255.255.255.255 up
+
+此时会有再运行 ifconfig 会看到如下
+tunl0     Link encap:IPIP Tunnel  HWaddr   
+          inet addr:10.0.64.102  Mask:255.255.255.255
+          UP RUNNING NOARP  MTU:1480  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 b)  TX bytes:0 (0.0 b)
+
+ifconfig tunl0 down
+此时会有再运行 ifconfig 会看到如下
+    没有tunl0设备了
+
+但是使用ip -o -f inet addr show
+  tunl0    inet 10.0.64.102/32 scope global tunl0
+依然还有这个ip，说明在tunl0配置ip的时候使用ifconfig tunl0 down 是不能删除这个ip的，但是使用ifconfig确查看不到
+
+--------------------如下步骤----------------------------------------
+ifconfig tunl0 up
+ifconfig tunl0:0 10.0.64.102 netmask 255.255.255.255 up
+ifconfig tunl0:0 down
+ifconfig tunl0 down
+此时使用ip -o -f inet addr show 或者 ifconfig 都看不到ip 10.0.64.102
+
+----------------------如下步骤---------------------------------------------------
+ifconfig tunl0 up
+ifconfig tunl0:0 10.0.64.102 netmask 255.255.255.255 up
+ifconfig tunl0:1 10.0.64.103 netmask 255.255.255.255 up
+ifconfig tunl0 down
+此时使用ifconfig看不到任何ip
+但是使用ip -o -f inet addr show，如下：
+  5: tunl0    inet 10.0.64.102/32 scope global tunl0:0
+  5: tunl0    inet 10.0.64.103/32 scope global tunl0:1
+ 说明ip并没有删除
+----------------------如下步骤---------------------------------------------------
+ifconfig tunl0 up
+ifconfig tunl0:0 10.0.64.102 netmask 255.255.255.255 up
+ifconfig tunl0:1 10.0.64.103 netmask 255.255.255.255 up
+ifconfig tunl0:0 down
+ifconfig tunl0:1 down
+ifconfig tunl0 down
+此时使用ip -o -f inet addr show或者ifconfig看不到任何ip
+说明 ip被删除了
+
+
+ifconfig eth0:0 192.168.1.120 netmask 255.255.255.0 up
+ifconfig eth0:0 down
+
+ifconfig eth0:0 11.111.26.4 netmask 255.255.255.0 up
+ifconfig eth0:0 11.111.26.6 netmask 255.255.255.0 up
+
+
+ifconfig eth0:0 11.111.10.3 netmask 255.255.255.0 up
+ifconfig eth0:0 11.111.26.4 netmask 255.255.255.0 up
+
+ifconfig en1 182.16.4.135 netmask 255.255.255.0 up
+ifconfig en1 182.16.4.134 netmask 255.255.255.0 up

@@ -1,0 +1,11 @@
+
+#获取前一天日期
+date -d 'yesterday' '+%Y%m%d'
+
+yesterday=$(date -d 'yesterday' '+%Y%m%d')
+
+
+#设置日期
+date -s "2007-08-03 14:15:00"
+date -s "2016-09-29 19:10:00"
+date -s "2016-10-25 14:31:30"

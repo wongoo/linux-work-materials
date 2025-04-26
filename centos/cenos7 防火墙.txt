@@ -1,0 +1,21 @@
+CentOS 7.0默认使用的是firewall作为防火墙，这里改为iptables防火墙。
+firewall：
+
+#启动firewall
+systemctl start firewalld.service
+
+#停止firewall
+systemctl stop firewalld.service
+
+#禁止firewall开机启动
+systemctl disable firewalld.service
+
+---------------------------------------------
+改成iptables
+firewall：
+systemctl start iptables.service
+
+DNS:
+nmcli con mod eth1 ipv4.dns "202.101.172.35 114.114.114.114 8.8.8.8"
+#将dns配置生效
+#nmcli con up eth1

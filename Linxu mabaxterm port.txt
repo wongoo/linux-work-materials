@@ -1,0 +1,3 @@
+6000
+
+windows firewall must allow this port

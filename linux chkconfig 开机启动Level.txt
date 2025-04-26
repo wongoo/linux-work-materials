@@ -1,0 +1,28 @@
+每次系统开机的时候，都会根据不同的runlevel级别启动不同的服务。
+
+　　众所周知Linux给我们提供了7中不同的启动级别0～6，那么不同的启动级别都会启动那些服务哪。
+可以使用chkconfig --list 查看，可以使用chkconfig 服务名 --level 3 ｛on|of｝修改是否要再某个级别启动或停止。
+
+　　1. 例如：要把sshd服务在第3种启动级别中停止。
+[root@team4 rc3.d]# chkconfig sshd --level 3 off
+
+　　2. 还可以手工修改，在/etc/rc.d/这个目录里有很多不同runlevel对应的目录，里面表明进入某个启动级别时要启动和停止那些服务。
+
+　　例如：
+[root@team4 etc]# ls /etc/rc.d
+init.d　rc0.d　rc2.d　rc4.d　rc6.d　　 rc.sysinit
+rc　　　rc1.d　rc3.d　rc5.d　rc.local
+我们用rc3.d这个目录为例，这个目录里面记录的是进入init 3时需要停止和启动那些服务。
+下面为rc3.d目录的内容：
+[root@team4 etc]# ls /etc/rc.d/rc3.d/
+K02avahi-dnsconfd　　　　　　K89pand　　　　　　 S25bluetooth
+K02dhcdbd　　　　　　　　　　K89rdisc　　　　　　S25netfs
+K02NetworkManager　　　　　　K91capi　　　　　　 S25pcscd
+K02NetworkManagerDispatcher　K99readahead_later　S26apmd
+K05conman　　　　　　　　　　S04readahead_early　S26hidd
+
+　　K开头代表这个启动级别需要停止的服务，编号是停止的时候执行的顺序，再后面就是服务明了。
+
+　　S开头则是要启动那些服务。
+
+　　注意：先执行K开头的，后执行S开头的。所以S开头的服务会覆盖K开头的服务。

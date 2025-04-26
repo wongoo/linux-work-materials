@@ -1,0 +1,28 @@
+From bash with dd:
+
+dd if=/dev/zero bs=9000 count=1000 > /dev/tcp/$target_host/$port
+
+or even with cat:
+
+cat < /dev/urandom > /dev/tcp/$target_host/$port
+
+---------------------------------------------------------
+printf 'GET / HTTP/1.0\n\n'  | nc -w 10 www.jfranken.de 80
+HTTP/1.0 200 OK
+Server: thttpd/2.21b 23apr2001
+Content-Type: text/html; charset=iso-8859-1
+[...]
+<HTML>
+[...]
+</HTML>
+
+
+
+cat data.txt | nc -w 10 127.0.0.1 30003
+cat data.txt | nc -w 10 172.31.20.37 30003
+
+
+
+
+
+cat data.txt > /dev/tcp/172.31.20.37/30003

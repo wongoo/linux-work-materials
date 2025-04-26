@@ -1,0 +1,50 @@
+In this section, the GNOME desktop will be added to a new server running CentOS 6.2 (x86_64) after performing a "Minimal" install.
+
+-------------------------------------------------
+Install Desktop Packages
+-------------------------------------------------
+	yum groupinstall "GNOME Desktop"
+	# yum -y groupinstall "Desktop" "Desktop Platform" "X Window System" "Fonts"
+	
+You can also install the following optional GUI packages.
+	# yum -y groupinstall "Graphical Administration Tools"
+	# yum -y groupinstall "Internet Browser"
+	# yum -y groupinstall "General Purpose Desktop"
+	# yum -y groupinstall "Office Suite and Productivity"
+	# yum -y groupinstall "Graphics Creation Tools"
+	
+Finally, if you wanted to add the K Desktop Environment (KDE).
+	# yum -y groupinstall kde-desktop
+	
+When using yum groupinstall, the groupinstall option only installs default and mandatory packages from the group. 
+There are times when you also want to include optional packages within a group. 
+I have not figured out (yet) how to control which package types to install (group package "policy") from the command-line using yum. 
+The only method I know of to also include optional packages is to edit the /etc/yum.conf file and add the following to the [main] section:
+	group_package_types=default mandatory optional
+	
+	
+The reason I mention this is because I wanted to install "Terminal emulator for the X Window System" (xterm) which is under the group "Legacy X Window System compatibility". 
+xterm happens to be an optional package and did not get installed until I added group_package_types=default mandatory optional to /etc/yum.conf.
+	# yum -y groupinstall "Legacy X Window System compatibility"
+	
+	
+I did find a plug-in for yum that allows users to specify which package types within a package group should be installed when using yum groupinstall.
+	http://projects.robinbowes.com/yum-grouppackagetypes/trac
+
+
+
+-------------------------------------------------
+Enable GNOME
+-------------------------------------------------
+Since the server was previously running on CLI mode, we need to change the initialization process for the machine to boot up in GUI mode.
+Open /etc/inittab using a text editor and change following line:
+		id:3:initdefault:
+	To:
+		id:5:initdefault:
+	
+After making the change, reboot the machine.
+	# init 6
+Note that you can switch from GUI to CLI mode manually by using following method:
+
+GUI to CLI: Ctrl + Alt + F6
+CLI to GUI: Ctrl + Alt + F1

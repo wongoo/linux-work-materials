@@ -1,0 +1,108 @@
+关于Linux的缓存内存 Cache Memory详解
+-----------------------------------------------
+
+PS：前天有童鞋问我，为啥我的Linux系统没运行多少程序，显示的可用内存这么少？其实Linux与Win的内存管理不同，会尽量缓存内存以提高读写性能，通常叫做Cache Memory。
+
+有时候你会发现没有什么程序在运行，但是使用top或free命令看到可用内存free项会很少，此时查看系统的 /proc/meminfo 文件，会发现有一项 Cached Memory：
+
+输入cat /proc/meminfo查看：
+
+	MemTotal: 16425996 kB
+	MemFree: 5698808 kB
+	Buffers: 380904 kB
+	Cached: 9389356 kB
+	SwapCached: 212 kB
+	Active: 6569200 kB
+	Inactive: 3725364 kB
+	HighTotal: 0 kB
+	HighFree: 0 kB
+	LowTotal: 16425996 kB
+	LowFree: 5698808 kB
+	SwapTotal: 8273464 kB
+	SwapFree: 8273252 kB
+	Dirty: 980 kB
+	Writeback: 0 kB
+	AnonPages: 524108 kB
+	Mapped: 24568 kB
+	Slab: 381776 kB
+	PageTables: 7496 kB
+	NFS_Unstable: 0 kB
+	Bounce: 0 kB
+	CommitLimit: 16486460 kB
+	Committed_AS: 2143856 kB
+	VmallocTotal: 34359738367 kB
+	VmallocUsed: 267656 kB
+	VmallocChunk: 34359469303 kB
+	HugePages_Total: 0
+	HugePages_Free: 0
+	HugePages_Rsvd: 0
+	Hugepagesize: 2048 kB
+
+
+------------------------------------------------------------------
+free命令里各项内存指标说明：
+$ free
+	total used free shared buffers cached
+	Mem: 16425996 10727220 5698776 0 380904 9389832
+	-/+ buffers/cache: 956484 15469512  ==> 减去buffers和cache的结果可以看到，当前进程实际占用内存是900多M，而可用空闲（free）内存为1.5G左右
+	Swap: 8273464 212 8273252
+
+其中第一行用全局角度描述系统使用的内存状况：
+	total——总物理内存
+	used——已使用内存，一般情况这个值会比较大，因为这个值包括了cache+应用程序使用的内存
+	free——完全未被使用的内存
+	shared——应用程序共享内存
+	buffers——缓存，主要用于目录方面,inode值等（ls大目录可看到这个值增加）
+	cached——缓存，用于已打开的文件
+	
+	可以这么理解：
+		在linux的内存分配机制中，优先使用物理内存，当物理内存还有空闲时（还够用），不会释放其占用内存，
+		就算占用内存的程序已经被关闭了，该程序所占用的内存用来做缓存使用，对于开启过的程序、或是读取刚存取过得数据会比较快。
+		
+	因此查看目前进程正在实际被使用的内存，是 used -(buffers+cache)，
+	也可以认为如果swap没有大量使用，mem还是够用的，只有mem被当前进程实际占用完（没有了buffers和cache），才会使用到swap的。
+------------------------------------------------------------------
+总结：
+	total=used+free
+	used=buffers+cached (maybe add shared also)
+
+第二行描述应用程序的内存使用：
+前个值表示-buffers/cache——应用程序使用的内存大小，used减去缓存值
+后个值表示+buffers/cache——所有可供应用程序使用的内存大小，free加上缓存值
+
+
+------------------------------------------------------------------
+总结： 
+-buffers/cache=used-buffers-cached
++buffers/cache=free+buffers+cached
+
+第三行表示swap的使用：
+	used——已使用
+	free——未使用
+
+------------------------------------------------------------------
+什么是Cache Memory(缓存内存)：
+
+	当你读写文件的时候，Linux内核为了提高读写性能与速度，会将文件在内存中进行缓存，这部分内存就是Cache Memory(缓存内存)。
+	即使你的程序运行结束后，Cache Memory也不会自动释放。这就会导致你在Linux系统中程序频繁读写文件后，你会发现可用物理内存会很少。
+
+	其实这缓存内存(Cache Memory)在你需要使用内存的时候会自动释放，所以你不必担心没有内存可用。如果你希望手动去释放Cache Memory也是有办法的。
+
+------------------------------------------------------------------
+如何释放Cache Memory(缓存内存)：
+
+	用下面的命令可以释放Cache Memory：
+
+	To free pagecache:
+	echo 1 > /proc/sys/vm/drop_caches
+	To free dentries and inodes:
+	echo 2 > /proc/sys/vm/drop_caches
+	To free pagecache, dentries and inodes:
+	echo 3 > /proc/sys/vm/drop_caches
+
+注意，释放前最好sync一下，防止丢失数据。
+
+------------------------------------------------------------------
+总结：个人经验认为没必要手动释放，这种内存管理方式也是比win优胜的地方之一！
+	因为Linux的内核内存管理机制，一般情况下不需要特意去释放已经使用的cache。
+	这些cache起来的内容可以提高文件以及磁盘的读写速度。

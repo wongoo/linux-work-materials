@@ -1,0 +1,7 @@
+systemctl disable firewalld
+
+systemctl stop firewalld
+
+systemctl start firewalld
+
+systemctl status firewalld

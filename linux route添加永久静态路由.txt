@@ -1,0 +1,48 @@
+
+route add 189.68.11.22 gw 189.68.61.57
+route add 189.68.11.37 gw 189.68.61.57
+route del -host 189.68.11.37
+
+------------------------------------------------------------------
+ 
+# route add  -host 192.168.168.110 dev eth0
+# route add  -host 192.168.168.119 gw 192.168.168.1
+ 
+# route add  -net IP netmask MASK eth0
+# route add  -net IP netmask MASK gw IP
+# route add  -net IP/24 eth1
+ 
+# route add default gw IP
+ 
+# route del host 192.168.168.110 dev eth0
+
+route 
+
+------------------------------------------------------------------
+ 
+route add -net 192.168.3.0/24 dev eth0
+route add -net 192.168.2.0/24 gw 192.168.3.254
+route add -host 10.204.0.99 gw 10.204.0.1
+
+route add -net 189.68.11.0/24 dev eth1
+
+2./etc/sysconfig/network
+GATEWAY=gw-ip GATEWAY=gw-dev
+
+3./etc/sysconfig/static-router :
+any net x.x.x.x/24 gw y.y.y.y 
+
+
+
+#------------------------------------------------------------------
+#        ---> MAC <----
+#------------------------------------------------------------------
+sudo route -n add -net 10.244.0.0/16 10.104.113.165
+sudo route -n delete -net 10.244.0.0/16
+
+sudo route -n add -host 10.244.4.22 10.104.113.164
+sudo route -n delete -host 10.244.4.22
+
+# -----> SHOW ROUTE
+netstat nr
+

@@ -1,0 +1,79 @@
+#!/bin/sh
+#
+# openoffice - this script starts and stops openoffice
+#
+# chkconfig:   - 85 15 
+# description:  openoffice
+#
+# gelnyang , 2015/8/27
+#
+# crontab -e
+# ------------------
+# #check every minutes
+# */1 * * * * /etc/init.d/openoffice check
+
+USER=$(whoami)
+EXECUSER=jboss
+
+datenow=$(date '+%Y%m%d')
+openoffice_log_path=/home/jboss/logs/openoffice/openoffice_$datenow-$USER.log
+mkdir -p /home/jboss/logs/openoffice
+
+openoffice_bin=/opt/openoffice4/program/soffice
+config_param="-accept=socket,host=localhost,port=8100;urp;StarOffice.ServiceManager -nologo -headless -nofirststartwizard"
+
+
+# add log header
+echo "----------------------------" >> $openoffice_log_path
+echo  $(date '+%Y%m%d%H%M%S')  >> $openoffice_log_path
+echo "$0" "$1" >> $openoffice_log_path
+echo "----------------------------" >> $openoffice_log_path
+
+function start(){
+	echo "Starting openoffice Server..." >> $openoffice_log_path
+	if [ $USER = $EXECUSER ]; then
+		$openoffice_bin '$config_param' > /dev/null 2>&1 &
+	else
+		/bin/su $EXECUSER -c $openoffice_bin" '$config_param' > /dev/null 2>&1 &"
+	fi
+	sleep 2
+	status
+}
+function stop(){
+	echo "Stop openoffice Server..." >> $openoffice_log_path
+	processflag=$(ps aux | grep $openoffice_bin | grep -v grep |tail -1)
+	if [ "$processflag" != "" ]; then
+		ps aux | grep $openoffice_bin | grep -v grep | cut -c 9-15 | xargs kill -s 9 >> $openoffice_log_path
+	fi
+}
+function status()
+{
+	echo "Checking status of openoffice Server... " >> $openoffice_log_path
+	processflag=$(/bin/ps -ef | grep $openoffice_bin | grep -v grep )
+	if [ "$processflag" == "" ]; then
+		echo "no openoffice process..." >> $openoffice_log_path
+		echo "openoffice is not running ..."
+		exit 1
+	else
+		echo processflag >> $openoffice_log_path
+		echo "openoffice is running..." 
+		exit 0
+	fi
+}
+function check(){
+	echo "check openoffice Server status..." >> $openoffice_log_path
+	processflag=$(ps aux | grep $openoffice_bin | grep -v grep |tail -1)
+	if [ "$processflag" == "" ]; then
+		start
+	fi
+}
+
+case "$1" in
+    start|stop|status|check)
+		$1
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status|check}"
+        exit 1
+        ;;
+esac

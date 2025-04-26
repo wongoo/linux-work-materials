@@ -1,0 +1,53 @@
+ps aux | grep -v grep | grep $(pwd) | awk '{print $2}'
+
+ps aux | grep -v grep | grep "jetty-server"  | awk '{print $2}' | xargs --no-run-if-empty kill -9
+ps aux | grep -v grep | grep "/usr/local/spy/wolfagent/wolfAgent"  | awk '{print $2}' | xargs --no-run-if-empty kill -9
+
+ps aux | grep -v grep| grep "/opt/alarm" | awk '{print $2}' | xargs  kill -9
+
+ps aux | grep "nginx" | awk '{print $2}' | xargs sudo kill -9
+ps aux | grep "common" | awk '{print $2}' | xargs kill -9
+ps aux | grep "bpm" | awk '{print $2}' | xargs kill -9
+ps aux | grep "swnod1" | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "jboss-eap-6.3"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "tibco"  | awk '{print $2}' | xargs kill -9
+
+ps aux | grep -v grep | grep "swnod1/etc/procmgr WATCHER"  | awk '{print $2}'
+
+ps aux | grep -v grep | grep "tomcat"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "nginx"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "_psbc"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "swnod1"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "/opt/bpm/swnod1/"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "/opt/swnod1/"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "/tibco/swnod1/"  | cut -c 9-18 | xargs kill -9
+
+ps aux | grep -v grep | grep "Credit"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "be-"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "swnod"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "hyxf"  | awk '{print $2}' | xargs kill -9
+
+ps aux | grep -v grep | grep target/  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep /home/soundbus/sop/  | awk '{print $2}' | xargs kill -9
+
+
+ps aux | grep -v grep | grep "bwengine"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "hawk"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "admin"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "jboss"  | awk '{print $2}' | xargs kill -9
+
+ps aux | grep -v grep | grep "jetty"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep "IBM"  | awk '{print $2}' | xargs kill -9
+ps aux | grep -v grep | grep sonic_server  | awk '{print $2}' | xargs kill -9
+
+
+
+¹ÜµÀ·û¡°|¡±ÓÃÀ´¸ô¿ªÁ½¸öÃüÁî£¬¹ÜµÀ·û×ó±ßÃüÁîµÄÊä³ö»á×÷Îª¹ÜµÀ·ûÓÒ±ßÃüÁîµÄÊäÈë¡£ÏÂÃæËµËµÓÃ¹ÜµÀ·ûÁª½ÓÆðÀ´µÄ¼¸¸öÃüÁî£º
+
+"ps aux" ²é¿´ËùÓÐ½ø³ÌµÄÃüÁî¡£ÕâÊ±¼ìË÷³öµÄ½ø³Ì½«×÷ÎªÏÂÒ»ÌõÃüÁîgrep "common"µÄÊäÈë¡£
+"grep "common" Ñ¡³öËùÓÐº¬ÓÐ¹Ø¼ü×Ö"common"µÄ½ø³Ì¡£
+"awk '{print $2}'" ½ØÈ¡ÊäÈëÐÐµÄµÚ9¸ö×Ö·ûµ½µÚ15¸ö×Ö·û£¬¶øÕâÕýºÃÊÇ½ø³ÌºÅPID¡£
+"xargs kill ¨C9" ÖÐµÄxargsÃüÁîÊÇÓÃÀ´°ÑÇ°ÃæÃüÁîµÄÊä³ö½á¹û£¨PID£©×÷Îª"kill ¨C9"ÃüÁîµÄ²ÎÊý£¬²¢Ö´ÐÐ¸ÃÃüÁî¡£"kill ¨C9" »áÇ¿ÐÐÉ±µôÖ¸¶¨½ø³Ì¡£
+
+--------------------------------------------------------------------------------------
+kill -9 `ps -ef | grep common |grep -v grep| awk '{print $2}'` 

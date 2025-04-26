@@ -1,0 +1,66 @@
+
+#------------------------------------------------------------
+###　查看系统总file descriptor限制 ###
+#------------------------------------------------------------
+sysctl fs.file-nr
+	<in use> <unuse but allocated> <maxinum>
+
+#------------------------------------------------------------
+###　查看用户file descriptor限制 ###
+#------------------------------------------------------------	
+	su - user
+	ulimit -Hn
+	
+limit=$(ulimit -Hn)
+if [ "$limit" != "65535" ]; then
+	ulimit -n 65535
+	limit=$(ulimit -Hn)
+fi
+echo "ulimit:"$limit
+	
+	
+#------------------------------------------------------------
+###　查看用户正在使用的file descriptor数量 ###
+#------------------------------------------------------------
+	sudo lsof -u user 2>/dev/null | wc -l
+	sudo lsof -u pro 2>/dev/null | wc -l
+	
+
+#------------------------------------------------------------
+###　修改file descriptor限制 ###
+#------------------------------------------------------------
+	vi /etc/sysctl.conf
+	fs.file-max=204708
+	
+	或者: sysctl -w fs.file-max=204708
+
+
+sysctl -w fs.file-max=102400
+
+
+#------------------------------------------------------------
+###　change open file number for current session ###
+#------------------------------------------------------------
+# see all the kernel parameters
+ulimit -a   
+
+#see the number of open files
+ulimit -n   
+
+#  set the number open files to 9000 for current session
+ulimit -n 9000
+
+
+
+
+#------------------------------------------------------------
+###　change open file number of kernel　###
+#------------------------------------------------------------
+vi  /etc/security/limits.conf
+user  soft  nofile 9000
+user  hard  nofile 65000
+	
+vi /etc/pam.d/common-session
+session required pam_limits.so
+
+
